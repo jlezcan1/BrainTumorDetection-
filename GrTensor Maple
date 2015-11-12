@@ -1,0 +1,21 @@
+
+restart:grtw();
+
+makeg(surfa);
+makeg>2;
+makeg>[x,y];
+makeg>d[x]^2+d[y]^2+((diff(f(x,y),x))*d[x]+(diff(f(x,y),y))*d[y])^2;
+makeg>{};
+makeg>0;
+ grcalc(R(dn,dn));
+ gralter(_,3,5,simplify);
+ grdisplay(_);
+ grcalc(G(dn,dn));
+ gralter(_,3,5,trigsin,expand);
+ grdisplay(_);
+ grcalc(Ricciscalar);
+ gralter(_,trigsin,simplify);
+ grdisplay(_);
+ grcalc(RiemSq,RicciSq);
+ gralter(RiemSq,RicciSq,3,6,7);
+ grdisplay(RiemSq,RicciSq);
