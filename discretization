@@ -1,0 +1,52 @@
+ restart:with(ImageTools);with(VectorCalculus):with(inttrans):
+ imagefile := cat(kernelopts(datadir), "/help/ImageTools/tumorbrain2.jpg"):
+ 
+ geom := ToGrayscale(Read(imagefile));
+ 
+ View(geom);
+ 
+ 
+ 
+ eq2N:= 1/3*1/eta^(2/3)/t^(2/3)*3^(1/3)*AiryAi(1/3*3^(2/3)*(-x+X)/eta^(1/3)/t^(1/3))*AiryAi(1/3*3^(2/3)*(-y+Y)/eta^(1/3)/t^(1/3));
+ P(x,y,t)=eq2N;
+ eq2N:=simplify(subs(eta=(sigma/t^(1/3))^3,eq2N),power,symbolic);
+ eta=(sigma/t^(1/3))^3;
+ P(x,y,sigma)=1/3*1/sigma^2*3^(1/3)*AiryAi(1/3*3^(2/3)*(-x+X)/sigma)*AiryAi(1/3*3^(2/3)*(-y+Y)/sigma);
+ 
+ 
+ eq7BC:=RTxx=eval(subs(f(x,y)=eq2N,(diff(f(x,y),`$`(x,2))*diff(f(x,y),`$`(y,2))+diff(f(x,y),`$`(x,2))*diff(f(x,y),`$`(y,2))*diff(f(x,y),x)^2-diff(f(x,y),x,y)^2-diff(f(x,y),x,y)^2*diff(f(x,y),x)^2)/(1+diff(f(x,y),y)^2+diff(f(x,y),x)^2)^2));
+
+ eq7BC1:=RTyy=eval(subs(f(x,y)=eq2N,(diff(f(x,y),`$`(x,2))*diff(f(x,y),`$`(y,2))+diff(f(x,y),`$`(x,2))*diff(f(x,y),y)^2*diff(f(x,y),`$`(y,2))-diff(f(x,y),x,y)^2-diff(f(x,y),x,y)^2*diff(f(x,y),y)^2)/(1+diff(f(x,y),y)^2+diff(f(x,y),x)^2)^2));
+
+ eq7BC2:=RTxy=eval(subs(f(x,y)=eq2N,diff(f(x,y),x)*diff(f(x,y),y)*(diff(f(x,y),`$`(x,2))*diff(f(x,y),`$`(y,2))-diff(f(x,y),x,y)^2)/(1+diff(f(x,y),y)^2+diff(f(x,y),x)^2)^2));
+
+
+ Img(x,y,sigma)=Int(Int(RT(x-eta,y-xi)*Img(eta,xi),eta=-infinity..infinity),xi=-infinity..infinity);
+ 
+ 
+ 
+ 
+ 
+ KK:=(i,j,alpha)->evalf(subs({x=i,X=6,y=j,Y=6,sigma=alpha},rhs(eq7BC)));
+ KK1:=(i,j,alpha)->evalf(subs({x=i,X=6,y=j,Y=6,sigma=alpha},rhs(eq7BC1)));
+ KK2:=(i,j,alpha)->evalf(subs({x=i,X=6,y=j,Y=6,sigma=alpha},rhs(eq7BC2)));
+ KKA:=(alpha)->Matrix((i,j)->evalf(KK(i,j,alpha)),11);
+ KKA1:=(alpha)->Matrix((i,j)->evalf(KK1(i,j,alpha)),11);
+ KKA2:=(alpha)->Matrix((i,j)->evalf(KK2(i,j,alpha)),11);
+ geomKK:=(alpha)->Convolution(geom,KKA(alpha),weight=1);
+ geomKK1:=(alpha)->Convolution(geom,KKA1(alpha),weight=1);
+ geomKK2:=(alpha)->Convolution(geom,KKA2(alpha),weight=1);
+ View([Scale(geom,1),Scale(geomKK(0.1),1),Scale(geomKK1(0.1),1),Scale(geomKK2(0.1),1)]);
+ 
+ plisi:=geomKK(0.1);
+ plisi1:=geomKK1(0.1);
+ plisi2:=geomKK2(0.1);
+ n:=Height(plisi);
+ m:=Height(Transpose(plisi));
+ View([geom,plisi1,plisi2]);
+ lasg:=Create(Array(1..n,1..m,1..3,(i,j,k)->`if`(k = 3,2*plisi[i,j],`if`(k =2,2*plisi1[i,j],2*plisi2[i,j])) )):
+ lasg1:=Create(Array(1..n,1..m,1..3,(i,j,k)->`if`(k = 1,2*plisi[i,j],`if`(k =2,2*plisi1[i,j],2*plisi2[i,j])) )):
+ View([geom,plisi2,lasg]);
+ View([geom,plisi2,lasg1]);
+ View([geom,lasg1,lasg]);
+
